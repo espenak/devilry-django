@@ -41,6 +41,7 @@ class AggregatePeriod(View):
 
     def _serialize_group(self, group):
         return {'id': group.id,
+                'assignment_id': group.parentnode_id,
                 'feedback': self._serialize_feedback(group.feedback)}
 
     def _create_resultdict(self, user, relatedstudent=None):
