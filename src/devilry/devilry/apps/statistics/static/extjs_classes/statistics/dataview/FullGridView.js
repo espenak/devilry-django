@@ -101,24 +101,21 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
 
     _onSelectStudent: function(grid, record) {
         this._detailsPanel.removeAll();
-        this._detailsPanel.expand();
-        var assignmentgroups = [];
-        // TODO: replace assignmentGroupRecord with groupInfo, and fix the view
+        var groupInfos = [];
         Ext.Object.each(record.groupsByAssignmentId, function(assignmentid, group) {
-            if(group.assignmentGroupRecord != null) {
-                assignmentgroups.push(group.assignmentGroupRecord.data);
+            if(group.groupInfo !== null) {
+                groupInfos.push(group.groupInfo);
             }
         }, this);
         this._detailsPanel.setTitle(this.selectedStudentTitleTpl.apply(record.data));
         this._detailsPanel.add({
             xtype: 'statistics-overviewofsinglestudent',
             assignment_store: record.assignment_store,
-            assignmentgroups: assignmentgroups,
+            groupInfos: groupInfos,
             username: record.get('username'),
             full_name: record.get('full_name'),
-            labelKeys: record.get('labelKeys'),
-            border: false,
-            frame: false
+            labelStrings: record.get('labelStrings')
         });
+        this._detailsPanel.expand();
     }
 });

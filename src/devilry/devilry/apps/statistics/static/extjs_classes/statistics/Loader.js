@@ -363,10 +363,8 @@ Ext.define('devilry.statistics.Loader', {
 
     requireCompleteDataset: function(callback, scope, args) {
         if(this._completeDatasetStatus.loaded) {
-            console.log('Already loaded complete', this);
             Ext.bind(callback, scope, args)();
         } else {
-            console.log('Load the complete set', this);
             this.addListener('completeDatasetLoaded', function() {
                 Ext.bind(callback, scope, args)();
             }, this, {single: true});
@@ -538,7 +536,6 @@ Ext.define('devilry.statistics.Loader', {
         for(index=start; index<items.length; index++) {
             Ext.bind(callback, scope)(items[index], index);
             if(index > 0 && index % 200 === 0) {
-                //console.log(index);
                 Ext.defer(function() {
                     this._iterateWithDeferYields(items, callback, scope, onComplete, index+1);
                 }, 5, this);
