@@ -50,14 +50,19 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
                 sortable: true,
                 renderer: function(scaled_points, p, studentRecord) {
                     var group = studentRecord.groupsByAssignmentId[assignment_id];
-                    if(group.assignmentGroupRecord) {
+                    if(group.groupInfo) {
                         var tpldata = {
                             scaled_points: scaled_points,
-                            has_feedback: group.assignmentGroupRecord.get('feedback') != null,
-                            is_passing_grade: group.assignmentGroupRecord.get('feedback__is_passing_grade'),
-                            is_open: group.assignmentGroupRecord.get('is_open'),
-                            grade: group.assignmentGroupRecord.get('feedback__grade')
+                            is_open: group.groupInfo.is_open,
+                            has_feedback: false
                         };
+                        if(group.groupInfo.feedback !== null) {
+                            Ext.apply(tpldata, {
+                                has_feedback: true,
+                                is_passing_grade: group.groupInfo.feedback.is_passing_grade,
+                                grade: group.groupInfo.feedback.grade
+                            });
+                        }
                         var result = me.cellTpl.apply(tpldata);
                         return result;
                     } else {
@@ -98,6 +103,7 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
         this._detailsPanel.removeAll();
         this._detailsPanel.expand();
         var assignmentgroups = [];
+        // TODO: replace assignmentGroupRecord with groupInfo, and fix the view
         Ext.Object.each(record.groupsByAssignmentId, function(assignmentid, group) {
             if(group.assignmentGroupRecord != null) {
                 assignmentgroups.push(group.assignmentGroupRecord.data);

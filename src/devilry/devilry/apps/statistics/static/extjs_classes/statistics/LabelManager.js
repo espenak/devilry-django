@@ -36,8 +36,7 @@ Ext.define('devilry.statistics.LabelManager', {
     },
     
     _changeRequired: function(student, match, label) {
-        var labelRecord = student.labels[label];
-        var has_label = labelRecord !== undefined; 
+        var has_label = Ext.Array.contains(student.labelStrings, label);
         if(match && !has_label) {
             return 'create';
         } else if(!match && has_label) {

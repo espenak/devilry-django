@@ -6,16 +6,22 @@ Ext.define('devilry.statistics.OverviewOfSingleStudent', {
         'devilry.statistics.SingleStudentPeriodChart'
     ],
     
-    config: {
-        assignmentgroups: undefined,
-        assignment_store: undefined,
-        labelKeys: undefined
-    },
+    /**
+     * @cfg {Object} [assignmentgroups]
+     */
+
+    /**
+     * @cfg {Object} [assignment_store]
+     */
+
+    /**
+     * @cfg {Object} [labelStrings]
+     */
 
     mainTpl: Ext.create('Ext.XTemplate',
         '<div style="margin-bottom: 5px">',
         '   <ul class="labels-list">',
-        '       <tpl for="labelKeys">',
+        '       <tpl for="labelStrings">',
         '          <li class="label-{.}">{.}</li>',
         '       </tpl>',
         '   </ul>',

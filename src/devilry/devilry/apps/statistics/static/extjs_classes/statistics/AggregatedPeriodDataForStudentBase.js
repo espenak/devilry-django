@@ -1,26 +1,18 @@
 Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
     extend: 'Ext.data.Model',
 
-    setLabel: function(label, value) {
-        this.labels[label] = value;
-        this.setLabelKeysFromLabels();
-    },
+    /**
+     * @property {Object} [assignment_store]
+     * Used to calculate scaled points.
+     */
 
-    delLabel: function(label) {
-        delete this.labels[label];
-        this.setLabelKeysFromLabels();
-    },
-
-    setLabelKeysFromLabels: function() {
-        this.set('labelKeys', Ext.Object.getKeys(this.labels));
-        this.commit();
-    },
 
     countPassingAssignments: function(assignment_ids) {
         var passes = 0;
         Ext.Object.each(this.groupsByAssignmentId, function(assignment_id, group) {
-            if(group.assignmentGroupRecord && Ext.Array.contains(assignment_ids, parseInt(assignment_id))) {
-                if(group.assignmentGroupRecord.get('feedback__is_passing_grade')) {
+            if(group.groupInfo && Ext.Array.contains(assignment_ids, parseInt(assignment_id))) {
+                var feedback = group.groupInfo.feedback;
+                if(feedback !== null && feedback.is_passing_grade) {
                     passes ++;
                 }
             };
@@ -50,8 +42,8 @@ Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
         var totalScaledPoints = 0;
         Ext.each(this.assignment_ids, function(assignment_id, index) {
             var group = this.groupsByAssignmentId[assignment_id];
-            if(group.assignmentGroupRecord) {
-                group.scaled_points = this._calculateScaledPoints(group.assignmentGroupRecord);
+            if(group.groupInfo) {
+                group.scaled_points = this._calculateScaledPoints(group.groupInfo);
                 this.set(assignment_id + '::scaledPoints', group.scaled_points);
                 totalScaledPoints += group.scaled_points;
             }
@@ -73,10 +65,10 @@ Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
         }
     },
 
-    _calculateScaledPoints: function(assignmentGroupRecord) {
-        if(assignmentGroupRecord) {
-            var assignmentRecord = this.assignment_store.getById(assignmentGroupRecord.get('parentnode'));
-            var points = assignmentGroupRecord.get('feedback__points');
+    _calculateScaledPoints: function(groupInfo) {
+        if(groupInfo && groupInfo.feedback) {
+            var assignmentRecord = this.assignment_store.getById(groupInfo.assignment_id);
+            var points = groupInfo.feedback.points;
             return assignmentRecord.get('scale_points_percent') * points / 100;
         } else {
             return 0;

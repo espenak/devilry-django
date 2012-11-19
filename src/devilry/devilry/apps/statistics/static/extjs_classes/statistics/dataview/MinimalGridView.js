@@ -9,7 +9,7 @@ Ext.define('devilry.statistics.dataview.MinimalGridView', {
 
     labelTpl: Ext.create('Ext.XTemplate',
         '<ul class="labels-list">',
-        '    <tpl for="labelKeys">',
+        '    <tpl for="labelStrings">',
         '       <li class="label-{.}">{.}</li>',
         '    </tpl>',
         '</ul>'
@@ -27,9 +27,9 @@ Ext.define('devilry.statistics.dataview.MinimalGridView', {
             minWidth: 140,
             flex: 2
         }, {
-            header: 'Labels', dataIndex: 'labelKeys',
+            header: 'Labels', dataIndex: 'labelStrings',
             width: 150,
-            renderer: function(labelKeys, p, record) {
+            renderer: function(labelStrings, p, record) {
                 return me.labelTpl.apply(record.data);
             }
         }];
