@@ -67,11 +67,9 @@ Ext.define('devilry.statistics.Loader', {
     },
 
     updateScaledPoints: function() {
-        this.store.suspendEvents(); // without suspendEvents/resumeEvents, each record change fires an update event, which makes updateScaledPoints take forever for huge datasets.
         Ext.each(this.store.data.items, function(studentRecord, index) {
             studentRecord.updateScaledPoints();
         }, this);
-        this.store.resumeEvents();
     },
 
     filterBy: function(description, fn, scope) {
