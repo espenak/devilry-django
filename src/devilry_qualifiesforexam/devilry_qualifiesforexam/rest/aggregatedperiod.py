@@ -1,10 +1,10 @@
-from django.db.models import Q, Count
 from djangorestframework.views import View
 from djangorestframework.permissions import IsAuthenticated
 
 from devilry.apps.core.models import AssignmentGroup
 from devilry.apps.core.models import Period
 from devilry.apps.core.models import RelatedStudent
+from devilry.apps.core.models import RelatedStudentKeyValue
 
 
 
@@ -13,9 +13,6 @@ class AggregatePeriod(View):
     Get detailed data for all students on a period, including their labels.
     """
     permissions = (IsAuthenticated,)
-
-    def _get_resultkey_from_user(self, user):
-        return str(user.id)
 
     def _serialize_user(self, user):
         return {'id': user.id,
@@ -27,6 +24,7 @@ class AggregatePeriod(View):
         return {'id': relatedstudent.id,
                 'tags': relatedstudent.tags,
                 'candidate_id': relatedstudent.candidate_id,
+                'labels': []
                }
 
     def _serialize_feedback(self, feedback):
@@ -41,11 +39,13 @@ class AggregatePeriod(View):
 
     def _serialize_group(self, group):
         return {'id': group.id,
+                'is_open': group.is_open,
                 'assignment_id': group.parentnode_id,
                 'feedback': self._serialize_feedback(group.feedback)}
 
-    def _create_resultdict(self, user, relatedstudent=None):
-        resultdict = {'user': self._serialize_user(user),
+    def _create_resultdict(self, user, relatedstudent=None, labels=None):
+        resultdict = {'userid': user.id, # Needed by ExtJS since an object can not be idProperty on a model - does not hurt in any other cases even if it is also included in ``user``.
+                      'user': self._serialize_user(user),
                       'relatedstudent': None,
                       'groups': []}
         if relatedstudent:
@@ -56,28 +56,41 @@ class AggregatePeriod(View):
         relatedstudents = RelatedStudent.objects.filter(period=period)
         result = {}
         for relatedstudent in relatedstudents:
-            result[self._get_resultkey_from_user(relatedstudent.user)] = self._create_resultdict(relatedstudent.user, relatedstudent)
+            result[str(relatedstudent.user.id)] = self._create_resultdict(relatedstudent.user, relatedstudent)
         return result
 
-    def _merge_groups_into_relatedstudents(self, period, result):
+    def _add_labels(self, period, result):
+        keyvalues = RelatedStudentKeyValue.objects.filter(relatedstudent__period=period,
+                                                          application='devilry.statistics.Labels')
+        keyvalues = keyvalues.select_related('relatedstudent')
+        for keyvalue in keyvalues:
+            userdct = result[str(keyvalue.relatedstudent.user_id)]
+            userdct['relatedstudent']['labels'].append(keyvalue.key)
+
+
+    def _add_groups(self, period, result):
         groups = AssignmentGroup.objects.filter(parentnode__parentnode=period)
         groups = groups.order_by('parentnode__publishing_time')
         for group in groups:
             groupdct = self._serialize_group(group)
             for candidate in group.candidates.all():
                 user = candidate.student
-                userkey = self._get_resultkey_from_user(user)
+                userkey = str(user.id)
                 try:
                     userdct = result[userkey]
                 except KeyError:
-                    # NOTE: This means that we have a student registered on an assignment, but not on the period.
-                    userdct = self._create_resultdict(user)
-                    result[userkey] = userdct
-                userdct['groups'].append(groupdct)
+                    # NOTE: This means that we have a student registered on an assignment, but not on the period. These are not handled by the old Admin-ui, bu should be handled in the new.
+                    #userdct = self._create_resultdict(user)
+                    #result[userkey] = userdct
+                    #userdct['groups'].append(groupdct) # note: use finally to DRY
+                    pass
+                else:
+                    userdct['groups'].append(groupdct)
 
     def get(self, request, id):
         period = Period.objects.get(pk=id)
         # TODO: check permissions
         result = self._initialize_from_relatedstudents(period)
-        self._merge_groups_into_relatedstudents(period, result)
+        self._add_labels(period, result)
+        self._add_groups(period, result)
         return result.values()
