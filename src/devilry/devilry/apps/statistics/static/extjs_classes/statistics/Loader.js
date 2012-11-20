@@ -172,7 +172,7 @@ Ext.define('devilry.statistics.Loader', {
 
     _loadAggregatedPeriodData: function(loadEverything, callbackFn) {
         this.aggregatedPeriodDataStore = Ext.create('devilry.statistics.AggregatedPeriodDataStore');
-        this.aggregatedPeriodDataStore.loadForPeriod(this.periodid, {
+        this.aggregatedPeriodDataStore.loadForPeriod(this.periodid, loadEverything, {
             scope: this,
             callback: function(records, operation) {
                 if(operation.success) {

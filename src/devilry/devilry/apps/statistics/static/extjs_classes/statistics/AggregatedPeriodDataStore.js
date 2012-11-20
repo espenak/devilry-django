@@ -6,8 +6,13 @@ Ext.define('devilry.statistics.AggregatedPeriodDataStore', {
         this.proxy.url = Ext.String.format(this.proxy.urlpatt, period_id);
     },
 
-    loadForPeriod: function(period_id, loadConfig) {
+    setLoadEverything: function(loadEverything) {
+        this.proxy.extraParams.load_everything = loadEverything? '1': '0';
+    },
+
+    loadForPeriod: function(period_id, loadEverything, loadConfig) {
         this.setPeriod(period_id);
+        this.setLoadEverything(loadEverything);
         this.load(loadConfig);
     }
 });
