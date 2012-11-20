@@ -67,6 +67,8 @@ Ext.define('devilry.statistics.dataview.DataView', {
                 xtype: 'button',
                 text: 'Change weight of assignments',
                 iconCls: 'icon-edit-16',
+                itemId: 'changeWeightButton',
+                hidden: true,
                 listeners: {
                     scope: this,
                     click: this._onScaleAssignments
@@ -100,6 +102,11 @@ Ext.define('devilry.statistics.dataview.DataView', {
 
     _setView: function(clsname) {
         this.removeAll();
+        if(clsname === 'devilry.statistics.dataview.FullGridView') {
+            this.down('#changeWeightButton').show();
+        } else {
+            this.down('#changeWeightButton').hide();
+        }
         this._layout = Ext.create(clsname, {
             loader: this.loader
         });
