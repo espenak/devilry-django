@@ -26,12 +26,12 @@ Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
     countPassingAssignments: function(assignment_ids) {
         var passes = 0;
         Ext.Object.each(this.groupsByAssignmentId, function(assignment_id, group) {
-            if(group.groupInfo && Ext.Array.contains(assignment_ids, parseInt(assignment_id))) {
+            if(group.groupInfo && Ext.Array.contains(assignment_ids, parseInt(assignment_id, 10))) {
                 var feedback = group.groupInfo.feedback;
                 if(feedback !== null && feedback.is_passing_grade) {
                     passes ++;
                 }
-            };
+            }
         }, this);
         return passes;
     },
@@ -46,9 +46,9 @@ Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
     getSumScaledPoints: function(assignment_ids) {
         var sumScaledPoints = 0;
         Ext.Object.each(this.groupsByAssignmentId, function(assignment_id, group) {
-            if(Ext.Array.contains(assignment_ids, parseInt(assignment_id))) {
+            if(Ext.Array.contains(assignment_ids, parseInt(assignment_id, 10))) {
                 sumScaledPoints += group.scaled_points;
-            };
+            }
         }, this);
         return sumScaledPoints;
     },

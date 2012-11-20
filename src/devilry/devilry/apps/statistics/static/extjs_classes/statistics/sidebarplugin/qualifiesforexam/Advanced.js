@@ -18,7 +18,7 @@ Ext.define('devilry.statistics.sidebarplugin.qualifiesforexam.Advanced', {
             items: [{
                 xtype: 'box',
                 cls: 'readable-section',
-                html: Ext.String.format('Advanced filters have a dedicated guide in the Administrator section of the <a href="{0}" target="_blank">Help</a>.', DevilrySettings.DEVILRY_HELP_URL),
+                html: Ext.String.format('Advanced filters have a dedicated guide in the Administrator section of the <a href="{0}" target="_blank">Help</a>.', DevilrySettings.DEVILRY_HELP_URL)
             }, {
                 xtype: 'statistics-filterchaineditor',
                 title: 'Rules',

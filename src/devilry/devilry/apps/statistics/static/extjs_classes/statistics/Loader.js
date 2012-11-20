@@ -222,7 +222,7 @@ Ext.define('devilry.statistics.Loader', {
     _addAllRelatedStudentsToStore: function() {
         this.totalStudents = this.aggregatedPeriodDataStore.data.items.length;
         this.aggregatedPeriodDataStore.each(function(aggregatedPeriodDataItem) {
-            var userid = aggregatedPeriodDataItem.get('userid')
+            var userid = aggregatedPeriodDataItem.get('userid');
             var user = aggregatedPeriodDataItem.get('user');
             var relatedStudent = aggregatedPeriodDataItem.get('relatedstudent');
             var record = Ext.create('devilry.statistics.AggregatedPeriodDataForStudentGenerated', {

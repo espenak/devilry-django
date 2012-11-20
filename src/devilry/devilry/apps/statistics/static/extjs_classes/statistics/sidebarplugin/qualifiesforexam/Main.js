@@ -171,7 +171,7 @@ Ext.define('devilry.statistics.sidebarplugin.qualifiesforexam.Main', {
         var settingData = {
             path: path,
             settings: settings
-        }
+        };
         this.settingsRecord.set('value', Ext.JSON.encode(settingData));
         this.settingsRecord.save({
             scope: this,

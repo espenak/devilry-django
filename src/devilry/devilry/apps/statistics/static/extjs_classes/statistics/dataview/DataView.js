@@ -43,7 +43,7 @@ Ext.define('devilry.statistics.dataview.DataView', {
                 listeners: {
                     scope: this,
                     newSearchValue: this._search,
-                    emptyInput: function() { this._search() }
+                    emptyInput: function() { this._search(); }
                 }
             }, {
                 xtype: 'button',
