@@ -16,10 +16,10 @@ Ext.define('devilry.statistics.dataview.DataView', {
         loader: undefined,
         availableViews: [{
             clsname: 'devilry.statistics.dataview.MinimalGridView',
-            label: 'Minimal view'
+            label: 'View: Minimal'
         }, {
             clsname: 'devilry.statistics.dataview.FullGridView',
-            label: 'Detailed view'
+            label: 'View: Detailed'
         }],
         defaultViewClsname: 'devilry.statistics.dataview.FullGridView'
     },
