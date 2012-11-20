@@ -66,11 +66,12 @@ Ext.define('devilry.statistics.dataview.DataView', {
             }, {
                 xtype: 'button',
                 text: 'Change weight of assignments',
+                iconCls: 'icon-edit-16',
                 listeners: {
                     scope: this,
                     click: this._onScaleAssignments
                 }
-            }, {
+            }, '-', {
                 xtype: 'statistics-dataview-selectviewcombo',
                 availableViews: this.availableViews,
                 defaultViewClsname: this.defaultViewClsname,
