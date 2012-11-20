@@ -49,6 +49,49 @@ class IsPeriodAdmin(BasePermission):
 class AggregatePeriod(View):
     """
     Get detailed data for all students on a period, including their labels.
+
+    # Parameters
+    - ``id``: The last part of the path is the ID of the period.
+    - ``load_everything``: Add ``loadEverything=1`` to the querystring to
+      load feedback for all groups for all students within the period.
+    - ``include_nonrelated``: Add ``include_nonrelated=1`` to the querystring
+      to include students that are not registered as related students on the
+      period (but are registered as candidate on a group).
+
+    # Returns
+    An object/dict with one item for each student on the period. Each item
+    has the following attributes:
+
+    - ``userid``: The ID of the Devilry user for the student. This is unique within a period.
+    - ``user``: An object with the following attributes:
+        - ``id``: The same as ``userid``.
+        - ``username``
+        - ``email``
+        - ``full_name``
+    - ``relatedstudent``: An object with details about the RelatedStudent. If
+      ``include_nonrelated=1`` (se parameters), the value of this attribute is
+      ``null`` for students registered on a group, but not on the period. The
+      object has the following attributes:
+        - ``id``: ID of the RelatedStudent.
+        - ``tags``
+        - ``candidate_id``
+        - ``labels``: Labels are RelatedStudentKeyValue objects with
+          ``application=devilry.statistics.Labels``. An object with the
+          following attributes:
+            ``id``: ID of the RelatedStudentKeyValue.
+            ``label``: A string.
+    - ``groups``: ``null`` if ``load_everything!=1`` (see parameters). List of groups where the
+      user (student) is candidate. Each item in list has the following
+      attributes:
+        - ``id``
+        - ``is_open``
+        - ``assignment_id``
+        - ``feedback``: An object with the following attributes:
+            - ``id``
+            - ``grade``
+            - ``points``
+            - ``is_passing_grade``
+            - ``save_timestamp``
     """
     permissions = (IsAuthenticated, IsPeriodAdmin)
 
@@ -107,7 +150,7 @@ class AggregatePeriod(View):
                                                         'label': keyvalue.key})
 
 
-    def _add_groups(self, period, result):
+    def _add_groups(self, period, result, include_nonrelated):
         groups = AssignmentGroup.objects.filter(parentnode__parentnode=period)
         groups = groups.order_by('parentnode__publishing_time')
         for group in groups:
@@ -119,10 +162,10 @@ class AggregatePeriod(View):
                     userdct = result[userkey]
                 except KeyError:
                     # NOTE: This means that we have a student registered on an assignment, but not on the period. These are not handled by the old Admin-ui, bu should be handled in the new.
-                    #userdct = self._create_resultdict(user)
-                    #result[userkey] = userdct
-                    #userdct['groups'].append(groupdct) # note: use finally to DRY
-                    pass
+                    if include_nonrelated:
+                        userdct = self._create_resultdict(user)
+                        result[userkey] = userdct
+                        userdct['groups'].append(groupdct)
                 else:
                     userdct['groups'].append(groupdct)
 
@@ -131,5 +174,9 @@ class AggregatePeriod(View):
         # TODO: check permissions
         result = self._initialize_from_relatedstudents(period)
         self._add_labels(period, result)
-        self._add_groups(period, result)
+        load_everything = request.GET.get('load_everything', None) == '1'
+
+        if load_everything:
+            include_nonrelated = request.GET.get('include_nonrelated', None) == '1'
+            self._add_groups(period, result, include_nonrelated)
         return result.values()
