@@ -1,5 +1,8 @@
 from djangorestframework.views import View
 from djangorestframework.permissions import IsAuthenticated
+from djangorestframework.permissions import BasePermission
+from djangorestframework.response import ErrorResponse
+from djangorestframework import status
 
 from devilry.apps.core.models import AssignmentGroup
 from devilry.apps.core.models import Period
@@ -8,11 +11,46 @@ from devilry.apps.core.models import RelatedStudentKeyValue
 
 
 
+class PermissionDeniedError(ErrorResponse):
+    def __init__(self, errormsg):
+        super(PermissionDeniedError, self).__init__(status.HTTP_403_FORBIDDEN,
+                                                    {'detail': errormsg})
+
+
+
+class IsPeriodAdmin(BasePermission):
+    """
+    Djangorestframework permission checker that checks if the requesting user
+    has admin-permissions on the period given as the id kwarg to the
+    view.
+    """
+    def get_id(self):
+        """
+        Get the ``id`` from the view kwargs.
+
+        :raise PermissionDeniedError: If the ``id`` can not be determined.
+        """
+        try:
+            return self.view.kwargs['id']
+        except KeyError, e:
+            raise PermissionDeniedError(('The {classname} permission checker '
+                                         'requires the ``id`` parameter.').format(classname=self.__class__.__name__))
+
+    def check_permission(self, user):
+        if user.is_superuser:
+            return
+        periodid = self.get_id()
+        if Period.where_is_admin_or_superadmin(user).filter(id=periodid).count() == 0:
+            raise PermissionDeniedError('Permission denied')
+
+
+
+
 class AggregatePeriod(View):
     """
     Get detailed data for all students on a period, including their labels.
     """
-    permissions = (IsAuthenticated,)
+    permissions = (IsAuthenticated, IsPeriodAdmin)
 
     def _serialize_user(self, user):
         return {'id': user.id,
@@ -43,7 +81,7 @@ class AggregatePeriod(View):
                 'assignment_id': group.parentnode_id,
                 'feedback': self._serialize_feedback(group.feedback)}
 
-    def _create_resultdict(self, user, relatedstudent=None, labels=None):
+    def _create_resultdict(self, user, relatedstudent=None):
         resultdict = {'userid': user.id, # Needed by ExtJS since an object can not be idProperty on a model - does not hurt in any other cases even if it is also included in ``user``.
                       'user': self._serialize_user(user),
                       'relatedstudent': None,
@@ -65,7 +103,8 @@ class AggregatePeriod(View):
         keyvalues = keyvalues.select_related('relatedstudent')
         for keyvalue in keyvalues:
             userdct = result[str(keyvalue.relatedstudent.user_id)]
-            userdct['relatedstudent']['labels'].append(keyvalue.key)
+            userdct['relatedstudent']['labels'].append({'id': keyvalue.id,
+                                                        'label': keyvalue.key})
 
 
     def _add_groups(self, period, result):
