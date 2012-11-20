@@ -34,6 +34,7 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
             xtype: 'numbercolumn',
             format: '0.00',
             text: 'Total points',
+            menuDisabled: true,
             dataIndex: 'totalScaledPoints',
             minWidth: 80,
             sortable: true
@@ -47,6 +48,7 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
                 dataIndex: scaledPointdataIndex,
                 flex: 1,
                 minWidth: 140,
+                menuDisabled: true,
                 sortable: true,
                 renderer: function(scaled_points, p, studentRecord) {
                     var group = studentRecord.groupsByAssignmentId[assignment_id];

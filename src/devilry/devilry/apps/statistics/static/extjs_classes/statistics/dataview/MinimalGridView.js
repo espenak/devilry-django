@@ -19,15 +19,18 @@ Ext.define('devilry.statistics.dataview.MinimalGridView', {
         var me = this;
         var gridColumns = [{
             header: 'Username', dataIndex: 'username',
+            menuDisabled: true,
             width: 100,
             locked: true
         }, {
             xtype: 'sortfullnamebyglobalpolicycolumn',
+            menuDisabled: true,
             header: 'Full name', dataIndex: 'full_name',
             minWidth: 140,
             flex: 2
         }, {
             header: 'Labels', dataIndex: 'labels',
+            menuDisabled: true,
             width: 150,
             renderer: function(labels, p, record) {
                 return me.labelTpl.apply(record.data);
