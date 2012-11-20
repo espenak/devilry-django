@@ -33,7 +33,6 @@ Ext.define('devilry.statistics.Loader', {
 
         this.callParent(arguments);
         this._loadMinimalDataset();
-        //this.requireCompleteDataset(Ext.emptyFn);
     },
 
 
@@ -135,73 +134,6 @@ Ext.define('devilry.statistics.Loader', {
         });
     },
 
-    /**
-     * @private
-     */
-    _loadAllStudentLabels: function() {
-        this.relatedstudentkeyvalue_store = Ext.create('Ext.data.Store', {
-            model: 'devilry.apps.administrator.simplified.SimplifiedRelatedStudentKeyValue',
-            remoteFilter: true,
-            remoteSort: true
-        });
-        this.relatedstudentkeyvalue_store.pageSize = 100000; // TODO: avoid UGLY hack
-        this.relatedstudentkeyvalue_store.proxy.setDevilryFilters([{
-            field: 'relatedstudent__period',
-            comp: 'exact',
-            value: this.periodid
-        }, {
-            field: 'application',
-            comp: 'exact',
-            value: this.labelManager.application_id
-        }]);
-        this.relatedstudentkeyvalue_store.load({
-            scope: this,
-            callback: this._onLoadAllStudentLabels
-        });
-    },
-
-    /**
-     * @private
-     */
-    _onLoadAllStudentLabels: function(records, op) {
-        if(!op.success) {
-            this._handleLoadError('Failed to load labels', op);
-            return;
-        }
-        this._loadAllRelatedStudents();
-    },
-
-    /**
-     * @private
-     */
-    _loadAllRelatedStudents: function() {
-        this.relatedstudent_store = Ext.create('Ext.data.Store', {
-            model: 'devilry.apps.administrator.simplified.SimplifiedRelatedStudent',
-            remoteFilter: true,
-            remoteSort: true
-        });
-        this.relatedstudent_store.pageSize = 100000; // TODO: avoid UGLY hack
-        this.relatedstudent_store.proxy.setDevilryFilters([{
-            field: 'period',
-            comp: 'exact',
-            value: this.periodid
-        }]);
-        this.relatedstudent_store.load({
-            scope: this,
-            callback: this._onLoadAllRelatedStudents
-        });
-    },
-
-    /**
-     * @private
-     */
-    _onLoadAllRelatedStudents: function(records, op) {
-        if(!op.success) {
-            this._handleLoadError('Failed to load related students', op);
-            return;
-        }
-        this._loadAssignments();
-    },
 
     /**
      * @private
@@ -238,15 +170,6 @@ Ext.define('devilry.statistics.Loader', {
 
 
 
-
-
-
-
-
-
-
-
-
     _loadAggregatedPeriodData: function(loadEverything, callbackFn) {
         this.aggregatedPeriodDataStore = Ext.create('devilry.statistics.AggregatedPeriodDataStore');
         this.aggregatedPeriodDataStore.loadForPeriod(this.periodid, {
@@ -266,9 +189,6 @@ Ext.define('devilry.statistics.Loader', {
             }
         });
     },
-
-
-
 
 
 
@@ -297,7 +217,6 @@ Ext.define('devilry.statistics.Loader', {
 
     _mergeMinimalDatasetIntoStore: function() {
         this._addAllRelatedStudentsToStore();
-        //this._addLabelsToStore();
     },
 
     _addAllRelatedStudentsToStore: function() {
@@ -320,36 +239,6 @@ Ext.define('devilry.statistics.Loader', {
             this._students_by_releatedid[relatedStudent.id] = record;
         }, this);
     },
-    //_addAllRelatedStudentsToStoreOld: function() {
-        //this.totalStudents = this.relatedstudent_store.data.items.length;
-        //Ext.each(this.relatedstudent_store.data.items, function(relatedStudentRecord, index) {
-            //var userid = relatedStudentRecord.get('user')
-            //var username = relatedStudentRecord.get('user__username')
-            //var record = Ext.create('devilry.statistics.AggregatedPeriodDataForStudentGenerated', {
-                //userid: userid,
-                //username: username,
-                //full_name: relatedStudentRecord.get('user__devilryuserprofile__full_name'),
-                //labelKeys: []
-            //});
-            //this.store.add(record);
-            //record.labels = [];
-            //record.assignment_store = this.assignment_store;
-            //record.relatedStudentRecord = relatedStudentRecord;
-            //record.groupsByAssignmentId = {};
-            //this._students_by_releatedid[relatedStudentRecord.get('id')] = record;
-        //}, this);
-    //},
-
-    //_addLabelsToStore: function() {
-        //Ext.each(this.relatedstudentkeyvalue_store.data.items, function(appKeyValueRecord, index) {
-            //var relatedstudent_id = appKeyValueRecord.get('relatedstudent');
-            //var label = appKeyValueRecord.get('key');
-            //var labelDescription = appKeyValueRecord.get('value');
-            //var studentRecord = this._students_by_releatedid[relatedstudent_id];
-            //studentRecord.labels[label] = appKeyValueRecord;
-            //studentRecord.setLabelKeysFromLabels();
-        //}, this);
-    //},
 
 
 
@@ -376,71 +265,8 @@ Ext.define('devilry.statistics.Loader', {
         }
     },
 
-    /**
-     * @private
-     */
-    //_loadAllGroupsInPeriod: function() {
-        //this.assignmentgroup_store = Ext.create('Ext.data.Store', {
-            //model: 'devilry.apps.administrator.simplified.SimplifiedAssignmentGroup',
-            //remoteFilter: true,
-            //remoteSort: true
-        //});
-        //this.assignmentgroup_store.pageSize = 100000; // TODO: avoid UGLY hack
-        //this.assignmentgroup_store.proxy.setDevilryFilters([{
-            //field: 'parentnode__parentnode',
-            //comp: 'exact',
-            //value: this.periodid
-        //}]);
-        //this.assignmentgroup_store.load({
-            //scope: this,
-            //callback: this._onLoadAllGroupsInPeriod
-        //});
-    //},
 
-    /**
-     * @private
-     */
-    //_onLoadAllGroupsInPeriod: function(grouprecords, op) {
-        //if(!op.success) {
-            //this._handleLoadError('Failed to load assignment groups', op);
-            //return;
-        //}
-        //this._loadAllCandidatesInPeriod();
-    //},
 
-    /** 
-     * @private
-     */
-    //_loadAllCandidatesInPeriod: function() {
-        //this.candidate_store = Ext.create('Ext.data.Store', {
-            //model: 'devilry.apps.administrator.simplified.SimplifiedCandidate',
-            //remoteFilter: true,
-            //remoteSort: true
-        //});
-        //this.candidate_store.pageSize = 100000; // TODO: avoid UGLY hack
-        //this.candidate_store.proxy.setDevilryFilters([{
-            //field: 'assignment_group__parentnode__parentnode',
-            //comp: 'exact',
-            //value: this.periodid
-        //}]);
-        //this.candidate_store.load({
-            //scope: this,
-            //callback: this._onLoadAllCandidatesInPeriod
-        //});
-    //},
-
-    /**
-     * @private
-     */
-    //_onLoadAllCandidatesInPeriod: function(records, op) {
-        //if(!op.success) {
-            //this._handleLoadError('Failed to load candidates', op);
-            //return;
-        //}
-        //this._onCompleteDatasetLoaded();
-    //},
-
-    
 
     //////////////////////////////////////////////
     //
@@ -504,21 +330,6 @@ Ext.define('devilry.statistics.Loader', {
             }
         }, this, onComplete);
     },
-    //_addGroupsToStoreOld: function(onComplete) {
-        //this._iterateWithDeferYields(this.candidate_store.data.items, function(candidateRecord, index) {
-            //var student_id = candidateRecord.get('student');
-            //var studentRecord = this.store.getById(student_id);
-            //if(studentRecord) {
-                //var assignmentgroup_id = candidateRecord.get('assignment_group');
-                //var assignmentGroupRecord = this.assignmentgroup_store.getById(assignmentgroup_id);
-
-                //var assignment_id = assignmentGroupRecord.get('parentnode');
-                //var group = studentRecord.groupsByAssignmentId[assignment_id];
-                //group.candidates.push(candidateRecord); // This will add only unique candidate records, since we only fetch distinct candidates
-                //group.assignmentGroupRecord = assignmentGroupRecord; // This will be overwritten for each candidate, but that does not matter, since they overwrite with the same record
-            //}
-        //}, this, onComplete);
-    //},
 
     /**
      * @private
