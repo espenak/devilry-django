@@ -56,7 +56,8 @@ class AggregatePeriod(View):
       load feedback for all groups for all students within the period.
     - ``include_nonrelated``: Add ``include_nonrelated=1`` to the querystring
       to include students that are not registered as related students on the
-      period (but are registered as candidate on a group).
+      period (but are registered as candidate on a group). Ignored unless
+      ``load_everything=1``.
 
     # Returns
     An object/dict with one item for each student on the period. Each item
@@ -68,9 +69,9 @@ class AggregatePeriod(View):
         - ``username``
         - ``email``
         - ``full_name``
-    - ``relatedstudent``: An object with details about the RelatedStudent. If
-      ``include_nonrelated=1`` (se parameters), the value of this attribute is
-      ``null`` for students registered on a group, but not on the period. The
+    - ``relatedstudent``: An object with details about the RelatedStudent.
+      If ``include_nonrelated=1`` (se parameters), the value of this attribute
+      is ``null`` for students registered on a group, but not on the period. The
       object has the following attributes:
         - ``id``: ID of the RelatedStudent.
         - ``tags``
