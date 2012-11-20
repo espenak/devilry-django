@@ -42,7 +42,8 @@ Ext.define('devilry.statistics.Loader', {
             {name: 'userid', type: 'int'},
             {name: 'username', type: 'string'},
             {name: 'full_name', type: 'string'},
-            {name: 'labelStrings', type: 'auto'},
+            {name: 'labels', type: 'auto'},
+            {name: 'relatedstudent_id', type: 'int'},
             {name: 'totalScaledPoints', type: 'int'}
         ];
         Ext.each(this.assignment_store.data.items, function(assignmentRecord, index) {
@@ -309,7 +310,8 @@ Ext.define('devilry.statistics.Loader', {
                 userid: userid,
                 username: user.username,
                 full_name: user.full_name,
-                labelStrings: relatedStudent.labels
+                relatedstudent_id: relatedStudent.id,
+                labels: relatedStudent.labels
             });
             this.store.add(record);
             record.assignment_store = this.assignment_store;

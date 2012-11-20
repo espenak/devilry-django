@@ -14,14 +14,14 @@ Ext.define('devilry.statistics.OverviewOfSingleStudent', {
      */
 
     /**
-     * @cfg {Object} [labelStrings]
+     * @cfg {Object} [labels]
      */
 
     tpl: [
         '<div style="margin-bottom: 5px">',
         '   <ul class="labels-list">',
-        '       <tpl for="labelStrings">',
-        '          <li class="label-{.}">{.}</li>',
+        '       <tpl for="labels">',
+        '          <li class="label-{label}">{label}</li>',
         '       </tpl>',
         '   </ul>',
         '</div>',
@@ -96,7 +96,7 @@ Ext.define('devilry.statistics.OverviewOfSingleStudent', {
         Ext.apply(this, {
             data: {
                 items: this.store.data.items,
-                labelStrings: this.labelStrings,
+                labels: this.labels,
                 total_points: this.total_points
             }
         });

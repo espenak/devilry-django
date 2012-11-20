@@ -36,7 +36,7 @@ Ext.define('devilry.statistics.LabelManager', {
     },
     
     _changeRequired: function(student, match, label) {
-        var has_label = Ext.Array.contains(student.labelStrings, label);
+        var has_label = student.hasLabel(label);
         if(match && !has_label) {
             return 'create';
         } else if(!match && has_label) {
@@ -95,7 +95,7 @@ Ext.define('devilry.statistics.LabelManager', {
 
     _createLabelObj: function(student, label, student_can_read) {
         return {
-            relatedstudent: student.relatedStudentRecord.get('id'),
+            relatedstudent: student.get('relatedstudent_id'),
             application: this.application_id,
             key: label,
             student_can_read: (student_can_read == true)
@@ -107,8 +107,11 @@ Ext.define('devilry.statistics.LabelManager', {
         if(changeRequired === 'create') {
             toBeCreated.push(this._createLabelObj(student, label, student_can_read));
         } else if(changeRequired === 'delete') {
-            var labelRecord = student.labels[label];
-            toBeDeleted.push(labelRecord.get('id'));
+            var labelId = student.getLabelId(label);
+            if(labelId === -1) {
+                throw "Label not found";
+            }
+            toBeDeleted.push(labelId);
         }
     },
 

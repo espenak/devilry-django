@@ -6,6 +6,22 @@ Ext.define('devilry.statistics.AggregatedPeriodDataForStudentBase', {
      * Used to calculate scaled points.
      */
 
+    hasLabel: function(label) {
+        return Ext.Array.some(this.get('labels'), function(labelItem) {
+            return labelItem.label === label;
+        });
+    },
+
+    getLabelId: function(label) {
+        var labels = this.get('labels');
+        for(var index=0; index<labels.length; index++)  {
+            var labelItem = labels[index];
+            if(labelItem.label === label) {
+                return labelItem.id;
+            }
+        }
+        return -1;
+    },
 
     countPassingAssignments: function(assignment_ids) {
         var passes = 0;

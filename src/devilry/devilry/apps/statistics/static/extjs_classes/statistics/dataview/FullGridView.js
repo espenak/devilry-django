@@ -114,7 +114,7 @@ Ext.define('devilry.statistics.dataview.FullGridView', {
             groupInfos: groupInfos,
             username: record.get('username'),
             full_name: record.get('full_name'),
-            labelStrings: record.get('labelStrings')
+            labels: record.get('labels')
         });
         this._detailsPanel.expand();
     }
