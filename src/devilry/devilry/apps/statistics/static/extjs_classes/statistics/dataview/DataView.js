@@ -73,7 +73,10 @@ Ext.define('devilry.statistics.dataview.DataView', {
                     scope: this,
                     click: this._onScaleAssignments
                 }
-            }, '-', {
+            }, {
+                xtype: 'tbseparator',
+                itemId: 'changeWeightButtonSeparator'
+            }, {
                 xtype: 'statistics-dataview-selectviewcombo',
                 availableViews: this.availableViews,
                 defaultViewClsname: this.defaultViewClsname,
@@ -104,8 +107,10 @@ Ext.define('devilry.statistics.dataview.DataView', {
         this.removeAll();
         if(clsname === 'devilry.statistics.dataview.FullGridView') {
             this.down('#changeWeightButton').show();
+            this.down('#changeWeightButtonSeparator').show();
         } else {
             this.down('#changeWeightButton').hide();
+            this.down('#changeWeightButtonSeparator').hide();
         }
         this._layout = Ext.create(clsname, {
             loader: this.loader
